@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy container app to Azure Web App - adr-trade-webapp-linux
+name: Build and deploy Node.js app to Azure Web App - adr-trade-webapp-linux
 
 on:
   push:
@@ -11,41 +11,52 @@ on:
 
 jobs:
   build:
-    runs-on: 'ubuntu-latest'
+    runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
 
-    - name: Log in to registry
-      uses: docker/login-action@v2
-      with:
-        registry: https://mcr.microsoft.com/
-        username: ${{ secrets.AzureAppService_ContainerUsername_43027ea2f45e4a23bea7cdc0f86df68e }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_d2546dd2c22946578ef5c506cb5c2db9 }}
+      - name: npm install, build, and test
+        run: |
+          npm install
+          npm run build --if-present
+          npm run test --if-present
 
-    - name: Build and push container image to registry
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_43027ea2f45e4a23bea7cdc0f86df68e }}/appsvc/staticsite:${{ github.sha }}
-        file: ./Dockerfile
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v3
+        with:
+          name: node-app
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     environment:
-      name: 'production'
+      name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-    - name: Deploy to Azure Web App
-      id: deploy-to-webapp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'adr-trade-webapp-linux'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_e60f1b8be196495f8d99258f15918201 }}
-        images: 'mcr.microsoft.com/${{ secrets.AzureAppService_ContainerUsername_43027ea2f45e4a23bea7cdc0f86df68e }}/appsvc/staticsite:${{ github.sha }}'
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v3
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'adr-trade-webapp-linux'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_32DBD5FD1FB247A1A765A0E7ADB5D392 }}
+          package: .
