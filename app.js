@@ -49,7 +49,7 @@ const kcSingleton = (() => {
 const placeOrder = ({
     variety = 'regular',
     exchange = 'NFO',
-    product = 'MIS',
+    product = 'NRML',
     order_type = 'MARKET',
     tradingsymbol,
     transaction_type,
@@ -58,7 +58,7 @@ const placeOrder = ({
 }) => {
     const order = {
         exchange, // "NFO", "NSE"
-        tradingsymbol, // "NIFTY23APR17600CE", "NIFTY2350417600CE"
+        tradingsymbol, // "BANKNIFTY24OCT52200CE", "NIFTY2350417600CE"
         transaction_type, // "BUY", "SELL"
         quantity, // 50, 100
         product, // "CNC", "MIS", "NRML"
