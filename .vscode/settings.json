@@ -1,4 +1,8 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/2cbf6c1e-11f7-4e0b-9992-ecc99a04da29/resourceGroups/adr-trade-resource-group/providers/Microsoft.Web/sites/adr-trade-web-app",
-    "appService.deploySubpath": "."
+    "appService.deploySubpath": ".",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ]
 }

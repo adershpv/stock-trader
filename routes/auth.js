@@ -7,7 +7,7 @@ const {
 } = require('../services/kiteService')
 const { saveAccessToken, getAccessToken } = require('../config/appConfig')
 
-app.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
     res.send('Hello World!')
 })
 
