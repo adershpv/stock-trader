@@ -7,6 +7,10 @@ const {
 } = require('../services/kiteService')
 const { saveAccessToken, getAccessToken } = require('../config/appConfig')
 
+app.get('/', async (req, res) => {
+    res.send('Hello World!')
+})
+
 // Route to initiate login
 router.get('/login', (req, res) => {
     const loginUrl = getLoginUrl()
