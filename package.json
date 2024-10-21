@@ -9,6 +9,7 @@
   "author": "adersh",
   "license": "ISC",
   "dependencies": {
+    "@azure/app-configuration": "^1.7.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "kiteconnect": "^4.1.0"
